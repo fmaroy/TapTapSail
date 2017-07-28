@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Custom_Assets/MeshBuiding.unity
+    guid: caa76c96f66a343e7ab2221f4f7825d1

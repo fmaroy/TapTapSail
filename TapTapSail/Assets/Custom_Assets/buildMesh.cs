@@ -175,23 +175,14 @@ public class buildMesh : MonoBehaviour {
 			yield return 0;
 		}
 		obj.transform.localPosition = new Vector3 (0f, 0, 0);
-
-		//registers the gameObj in the general list for future hanlding
-		//Debug.Log(PlanesList.Count);
-		//PlanesList[PlanesList.Count -1][id]= obj;
-		//PlanesList[PlanesList.Count -1].Add(obj);
 	}
 
 	public void BuildStripe (int stripeID)
 	{
 		Debug.Log ("Array length : " + oldPointArray.Length);
-		//Debug.Log ("StripeID : " + stripeID);
-		//capture the objects in a list of arrays 5one array per stripe) for future handling;
-		//GameObject[] objInStripe = new GameObject[oldPointArray.Length - 1];
+
 		List<GameObject> objInStripe = new List<GameObject>();
-		//GameObject[] objInStripe = new GameObject[30];
-		//Debug.Log(objInStripe.Count);
-		//PlanesList.Add (objInStripe);
+
 		currentPlane = null;
 		for (int i = 0; i < oldPointArray.Length - 1; i ++) {
 			// generate one quad per point
@@ -217,10 +208,6 @@ public class buildMesh : MonoBehaviour {
 		float playerposZ = player.transform.position.z;
 		float stripPositionZ = 0;
 
-		/*while (stripWaterInt * WaterTileSize < playerposZ + worldZBoundary[1]) {
-			BuildWaterStripe (stripWaterInt, waterwidth,WaterTileSize);
-			stripWaterInt++;
-		}*/
 		while (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
@@ -235,28 +222,11 @@ public class buildMesh : MonoBehaviour {
 			foreach (GameObject obj in PlanesList[0]) {
 				Destroy (obj);
 			}
-			Debug.Log ("list lenght before : " + PlanesList.Count);
-			Debug.Log (PlanesList [0][0].transform.position.z);
 			PlanesList.Remove (PlanesList [0]);
-			Debug.Log ("list lenght after : " + PlanesList.Count);
-			Debug.Log (PlanesList [0][0].transform.position.z);
-
 	}
 
 	// Update is called once per frame
 	void Update () {
-		/*int i = 0;
-		if (Input.GetKeyDown (KeyCode.V)) {
-			oldPointArray = newPointArray;
-			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
-			//Debug.Log ("increment: " +stripInt);
-			BuildStripe (stripInt);
-			stripInt++;
-		}
-		if (Input.GetKeyDown (KeyCode.C)) {
-			BuildWaterStripe (stripWaterInt, waterwidth,WaterTileSize);
-			stripWaterInt++;
-		}*/
 		float playerposZ = player.transform.position.z;
 		if (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
 			oldPointArray = newPointArray;
