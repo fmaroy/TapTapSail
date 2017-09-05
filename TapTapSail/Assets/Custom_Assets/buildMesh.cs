@@ -37,18 +37,8 @@ public class buildMesh : MonoBehaviour {
 	public int stripWaterInt;
 
 	// Use this for initialization
-	void Start () {
-		//meshCreator.CreateHorizPlane (10, 10);
-		/*Vector3[] coordList = new Vector3[] {
-			new Vector3 (0, 0, 0),
-			new Vector3 (1, 0, 0),
-			new Vector3 (1, 0, 1),
-			new Vector3 (0, 0, 1)
-		};
-		meshCreator.CreatePlaneByCoordinates (coordList, true, mat);*/
-		/*oldPointArray = CreateFlatPointArray (width, meshSize);
-		newPointArray = CreateFlatPointArray (width, meshSize);
-		BuildStripe (0);*/
+	void Start () 
+	{
 		stripInt = 0;
 		stripWaterInt = 0;
 		newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
@@ -110,7 +100,7 @@ public class buildMesh : MonoBehaviour {
 		if ((v[0][1] < -0.5f) && (v[1][1] < -0.5f))
 		{
 			// Area is underwater
-			Debug.Log("test");
+			//Debug.Log("test");
 			aeraType = 2;
 		}
 		switch (aeraType) {
@@ -179,7 +169,7 @@ public class buildMesh : MonoBehaviour {
 
 	public void BuildStripe (int stripeID)
 	{
-		Debug.Log ("Array length : " + oldPointArray.Length);
+		//Debug.Log ("Array length : " + oldPointArray.Length);
 
 		List<GameObject> objInStripe = new List<GameObject>();
 
@@ -197,7 +187,7 @@ public class buildMesh : MonoBehaviour {
 			float startHeight = startheight + Random.Range((-1*RandomizeHeightFactor/2),(1*RandomizeHeightFactor/2));
 
 			StartCoroutine(AnimPlane(currentPlane, fallTime,startheight, RandomizeHeightFactor));
-			Debug.Log (currentPlane.name);
+			//Debug.Log (currentPlane.name);
 			objInStripe.Add (currentPlane);
 		}
 		PlanesList.Add (objInStripe);
@@ -234,7 +224,7 @@ public class buildMesh : MonoBehaviour {
 			BuildStripe (stripInt);
 			stripInt++;
 		}
-		Debug.Log("current Size : " + meshSize * PlanesList.Count);
+		//Debug.Log("current Size : " + meshSize * PlanesList.Count);
 		if (meshSize * PlanesList.Count > worldZBoundary [1] - worldZBoundary [0]) {
 			destroyWorldAgent ();
 		}
