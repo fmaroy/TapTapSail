@@ -6,6 +6,7 @@ public class PlayerScript : MonoBehaviour {
 
 	public float pace = 1.0f;
 	public float windDir = 180f;
+	public float windModifier = 0f;
 	public float playerDir;
 	public Camera cam;
 	bool starboard = true;
@@ -14,7 +15,18 @@ public class PlayerScript : MonoBehaviour {
 	void Start () {
 		cam = Camera.main;
 	}
-	
+
+	void OnTriggerEnter(Collider other)
+	{
+		Debug.Log ("Triggered");
+		if (other.tag == "WindCollectable")
+		{
+			Debug.Log ("Collected Wind");
+			windModifier = other.GetComponent<WindCollectableScript> ().WindDirAngle;
+			Destroy(other.gameObject);
+		}
+	}
+		
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetMouseButtonDown(0)) {
@@ -25,9 +37,9 @@ public class PlayerScript : MonoBehaviour {
 			}
 		}
 		if (starboard) {
-			playerDir = windDir - 180f + 45f;
+			playerDir = windDir - 180f + 45f - windModifier;
 		} else {
-			playerDir = windDir - 180f - 45f;
+			playerDir = windDir - 180f - 45f - windModifier;
 		}
 		float forwardPos = transform.position.z + Time.deltaTime * pace * Mathf.Cos(playerDir * Mathf.Deg2Rad);
 		float sidePos = transform.position.x + Time.deltaTime * pace * Mathf.Sin(playerDir * Mathf.Deg2Rad);

@@ -14,7 +14,6 @@ public class WindModifierHandler : MonoBehaviour {
 	public float currentPlayerPosZ;
 	public Vector2 WindArrowPosDelta = new Vector2 (5f, 10f);
 
-
 	// Use this for initialization
 	void Start () {
 		currentReleasePace = releasePace;
@@ -22,10 +21,11 @@ public class WindModifierHandler : MonoBehaviour {
 
 	public void releaseWind(GameObject obj, float angle, float xPos)
 	{
-		Debug.Log ("Instantiating");
+		//Debug.Log ("Instantiating");
 		GameObject temp = Instantiate(obj, new Vector3(xPos, 0, currentPlayerPosZ + environement.worldZBoundary[1] - WindArrowPosDelta[1]), Quaternion.identity);
 		temp.transform.SetParent (this.transform);
 		temp.transform.eulerAngles = new Vector3 (90f, angle, 0);
+		temp.GetComponent<WindCollectableScript> ().WindDirAngle = angle;
 		WindArrowsList.Add (temp);
 	}
 

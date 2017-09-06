@@ -6,6 +6,7 @@ public class buildMesh : MonoBehaviour {
 
 	public GameObject player;
 	public Vector2 worldZBoundary = new Vector2(); // Z offset of the player from which the world is getting created or destroyed
+
 	public List<Material> floorMaterial = new List<Material>();
 	public List<Material> underwaterMaterial = new List<Material>();
 	public List<Material> cliffMaterial = new List<Material>();
@@ -24,7 +25,10 @@ public class buildMesh : MonoBehaviour {
 	public int stripInt;
 	private Vector2[] oldPointArray;
 	private Vector2[] newPointArray;
-	private Vector2 currentShorePosition; //define the position on left shore and the right shore between 0 to 1 onf the total width
+	public Vector2 currentShorePosition; //define the position on left shore and the right shore between 0 to 1 onf the total width
+	//public Vector2 targetXBoundary = new Vector2(); // water boundary target
+	public float variability = 0f;
+
 	public float seaDepth = -2f;
 	//public List<GameObject[]> PlanesList = new List<GameObject[]>();
 	private GameObject currentPlane;
@@ -35,15 +39,29 @@ public class buildMesh : MonoBehaviour {
 	public GameObject WaterContainerPrefab;
 	public GameObject WaterTilePrefab;
 	public int stripWaterInt;
+	public Vector2 adimZVal = new Vector2();
 
 	// Use this for initialization
 	void Start () 
 	{
 		stripInt = 0;
 		stripWaterInt = 0;
+		currentShorePosition = new Vector2 (-1 * waterwidth /2, waterwidth / 2);
 		newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
 		currentShorePosition = new Vector2(0.2f,0.8f);
 		initWorld ();
+
+	}
+
+	public Vector2 GetShoreWidth(Vector2 prevzval ,Vector2 zoffset ,Vector2 variationAmount)
+	{
+		Vector2 shoreline = currentShorePosition;
+		float right = 0f;
+		float left = 1f;
+
+		shoreline = shoreline + new Vector2 ( variationAmount[0] *  Mathf.PerlinNoise(prevzval[0] + zoffset[0], 0f), variationAmount[1] * Mathf.PerlinNoise(0f, prevzval[1] + zoffset[1]));
+
+		return shoreline;
 	}
 
 	public Vector2[] CreateFlatPointArray (float widthLine, float step, float randomFactor)
@@ -63,6 +81,8 @@ public class buildMesh : MonoBehaviour {
 	{
 		float depth = 0f;
 		float dimlessXPos = 0.5f + (xPos / width) ;
+
+		//currentShorePosition = GetShoreWidth(adimZVal, new Vector2 (0.01f, 0.01f), new Vector2 (0.001f, 0.001f));
 		//Debug.Log (dimlessXPos);
 		if ((currentShorePosition [0] < dimlessXPos) && (dimlessXPos < currentShorePosition [1])) {
 			depth = seaDepth;
@@ -71,7 +91,7 @@ public class buildMesh : MonoBehaviour {
 		}
 		return depth;
 	}
-	
+
 	public Vector2[] CreatePointArray (float widthLine, float step, float randomFactor)
 	{
 		int numbOfSteps = Mathf.FloorToInt (widthLine / step) + 1;
@@ -83,7 +103,6 @@ public class buildMesh : MonoBehaviour {
 			float currentheight = calculateHeight(currentxPos);
 			//Debug.Log ("xpos: " + currentxPos +", depth : "+currentheight);
 			lineDefinition[i] = new Vector2 (currentxPos, currentheight + Random.Range((-1*randomFactor/2),(1*randomFactor/2)));
-
 		}
 		return lineDefinition;
 	}
@@ -182,9 +201,11 @@ public class buildMesh : MonoBehaviour {
 				new Vector3 (newPointArray[i+1][0], newPointArray[i+1][1], stripeID * meshSize + meshSize),
 				new Vector3 (newPointArray[i][0], newPointArray[i][1], stripeID * meshSize + meshSize)
 			};
-			Material floorMat = getFloorMaterial(coordList);	
+			Material floorMat = getFloorMaterial(coordList);
 			currentPlane = meshCreator.CreatePlaneByCoordinates ("world", coordList, floorMat);
+			currentPlane.transform.SetParent (this.transform);
 			float startHeight = startheight + Random.Range((-1*RandomizeHeightFactor/2),(1*RandomizeHeightFactor/2));
+
 
 			StartCoroutine(AnimPlane(currentPlane, fallTime,startheight, RandomizeHeightFactor));
 			//Debug.Log (currentPlane.name);
