@@ -26,7 +26,8 @@ public class buildMesh : MonoBehaviour {
 	private Vector2[] oldPointArray;
 	private Vector2[] newPointArray;
 	public Vector2 currentShorePosition; //define the position on left shore and the right shore between 0 to 1 onf the total width
-	//public Vector2 targetXBoundary = new Vector2(); // water boundary target
+	public Vector3 meshNumbPerSection = new Vector3();
+	public Vector3 meshSizePerSection = new Vector3();
 	public float variability = 0f;
 
 	public float seaDepth = -2f;
@@ -34,12 +35,11 @@ public class buildMesh : MonoBehaviour {
 	private GameObject currentPlane;
 	public List<List<GameObject>> PlanesList = new List<List<GameObject>>();
 	public List<GameObject[]> WaterPlanesList = new List<GameObject[]> ();
-	public float WaterTileSize = 10f;
+	public float WaterTileSize = 5f;
 	public float waterwidth = 30f;
 	public GameObject WaterContainerPrefab;
 	public GameObject WaterTilePrefab;
 	public int stripWaterInt;
-	public Vector2 adimZVal = new Vector2();
 
 	// Use this for initialization
 	void Start () 
@@ -49,32 +49,13 @@ public class buildMesh : MonoBehaviour {
 		currentShorePosition = new Vector2 (-1 * waterwidth /2, waterwidth / 2);
 		newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
 		currentShorePosition = new Vector2(0.2f,0.8f);
+		meshNumbPerSection = new Vector3 (Mathf.RoundToInt(width * (currentShorePosition[0])/meshSize), Mathf.RoundToInt(width * (currentShorePosition[1] - currentShorePosition[0])/meshSize), Mathf.RoundToInt(width * (1.0f - currentShorePosition[1])/meshSize));
+		Debug.Log ("meshNumbPerSection : " + meshNumbPerSection);
+		meshSizePerSection = new Vector3 (Mathf.RoundToInt(width * meshNumbPerSection[0]), Mathf.RoundToInt(width / meshNumbPerSection[1]) , Mathf.RoundToInt(width / meshNumbPerSection[2]));
+		meshSizePerSection = new Vector3 (meshSize, meshSize, meshSize);
+		meshSizePerSection = new Vector3 (width * currentShorePosition[0]/meshNumbPerSection[0], width * (currentShorePosition[1]-currentShorePosition[0])/meshNumbPerSection[1], width * (1.0f - currentShorePosition[1])/meshNumbPerSection[2]);
+		Debug.Log ("meshSizePerSection : " + meshSizePerSection);
 		initWorld ();
-
-	}
-
-	public Vector2 GetShoreWidth(Vector2 prevzval ,Vector2 zoffset ,Vector2 variationAmount)
-	{
-		Vector2 shoreline = currentShorePosition;
-		float right = 0f;
-		float left = 1f;
-
-		shoreline = shoreline + new Vector2 ( variationAmount[0] *  Mathf.PerlinNoise(prevzval[0] + zoffset[0], 0f), variationAmount[1] * Mathf.PerlinNoise(0f, prevzval[1] + zoffset[1]));
-
-		return shoreline;
-	}
-
-	public Vector2[] CreateFlatPointArray (float widthLine, float step, float randomFactor)
-	{
-		int numbOfSteps = Mathf.FloorToInt (widthLine / step) + 1;
-		//Debug.Log (numbOfSteps);
-		Vector2 [] lineDefinition = new Vector2[numbOfSteps];
-		for (int i = 0; i< numbOfSteps; i++){
-			//Debug.Log("Create : i " + i + ", step : " + step);
-			lineDefinition[i] = new Vector2 (i * step - width/2, Random.Range((-1*randomFactor/2),(1*randomFactor/2)));
-
-		}
-		return lineDefinition;
 	}
 
 	public float calculateHeight(float xPos)
@@ -82,8 +63,8 @@ public class buildMesh : MonoBehaviour {
 		float depth = 0f;
 		float dimlessXPos = 0.5f + (xPos / width) ;
 
-		//currentShorePosition = GetShoreWidth(adimZVal, new Vector2 (0.01f, 0.01f), new Vector2 (0.001f, 0.001f));
-		//Debug.Log (dimlessXPos);
+		//currentShorePosition = this.GetComponent<WorldManager>().GetShoreWidth(new Vector2 (0.01f, 0.01f), new Vector2 (0.1f, 0.1f));
+
 		if ((currentShorePosition [0] < dimlessXPos) && (dimlessXPos < currentShorePosition [1])) {
 			depth = seaDepth;
 		} else {
@@ -92,17 +73,44 @@ public class buildMesh : MonoBehaviour {
 		return depth;
 	}
 
+	public Vector3 updateMeshSizePerSection(Vector2 shore)
+	{
+		Vector3 meshSizeVector = new Vector3 (meshSize, meshSize, meshSize);
+
+		meshSizeVector = new Vector3 (width * shore[0]/meshNumbPerSection[0], width * (shore[1]-shore[0])/meshNumbPerSection[1], width * (1.0f - shore[1])/meshNumbPerSection[2]);
+		//Debug.Log ("meshSizePerSection : " + meshSizePerSection);
+
+		return meshSizeVector;
+	}
+
 	public Vector2[] CreatePointArray (float widthLine, float step, float randomFactor)
 	{
 		int numbOfSteps = Mathf.FloorToInt (widthLine / step) + 1;
+		float currentMeshSize = step;
 		//Debug.Log (numbOfSteps);
 		Vector2 [] lineDefinition = new Vector2[numbOfSteps];
+		float sumedXPos = 0f;
 		for (int i = 0; i< numbOfSteps; i++){
+			if (i < meshNumbPerSection[0]){
+				currentMeshSize = meshSizePerSection [0];
+				//Debug.Log ("meshSize on right shore : " + currentMeshSize);
+			}
+			if ((i >= meshNumbPerSection[0])&&(i < (meshNumbPerSection[0] + meshNumbPerSection[1]))){
+				currentMeshSize = meshSizePerSection [1];
+				//Debug.Log ("meshSize on middle : " + currentMeshSize);
+			}
+			if (i >= (meshNumbPerSection[0]+meshNumbPerSection[1])){
+				currentMeshSize = meshSizePerSection [2];
+				//Debug.Log ("meshSize on right shore : " + currentMeshSize);
+			}
 			//Debug.Log("Create : i " + i + ", step : " + step);
-			float currentxPos = i * step - width/2;
+			//float currentxPos = i * step - width/2;
+			float currentxPos = sumedXPos - width /2;
+
 			float currentheight = calculateHeight(currentxPos);
 			//Debug.Log ("xpos: " + currentxPos +", depth : "+currentheight);
 			lineDefinition[i] = new Vector2 (currentxPos, currentheight + Random.Range((-1*randomFactor/2),(1*randomFactor/2)));
+			sumedXPos = sumedXPos + currentMeshSize;
 		}
 		return lineDefinition;
 	}
@@ -220,6 +228,8 @@ public class buildMesh : MonoBehaviour {
 		float stripPositionZ = 0;
 
 		while (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
+			currentShorePosition = this.GetComponent<WorldManager>().GetShoreWidth(new Vector2 (0.01f, 0.01f), new Vector2 (0.1f, 0.1f));
+			meshSizePerSection = updateMeshSizePerSection (currentShorePosition);
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
 			BuildStripe (stripInt);
@@ -239,6 +249,12 @@ public class buildMesh : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		float playerposZ = player.transform.position.z;
+		currentShorePosition = this.GetComponent<WorldManager>().GetShoreWidth(new Vector2 (0.01f, 0.01f), new Vector2 (0.1f, 0.1f));
+		meshSizePerSection = updateMeshSizePerSection (currentShorePosition);
+
+		Debug.Log ("current Shore Position : " + currentShorePosition);
+		Debug.Log ("meshSize per section : " + meshSizePerSection);
+		Debug.Log ("SumCheck : " + (meshSizePerSection[0]*meshNumbPerSection[0] + meshSizePerSection[1]*meshNumbPerSection[1] + meshSizePerSection[2]*meshNumbPerSection[2]));
 		if (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
