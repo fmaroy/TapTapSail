@@ -10,6 +10,9 @@ public class PlayerScript : MonoBehaviour {
 	public float playerDir;
 	public Camera cam;
 	bool starboard = true;
+	public GameObject model;
+	public float gite = 15f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -37,9 +40,11 @@ public class PlayerScript : MonoBehaviour {
 			}
 		}
 		if (starboard) {
-			playerDir = windDir - 180f + 45f - windModifier;
+			playerDir = windDir - 180f + 45f + windModifier;
+			model.transform.localEulerAngles = new Vector3 (-15f, -90, 0f);
 		} else {
-			playerDir = windDir - 180f - 45f - windModifier;
+			playerDir = windDir - 180f - 45f + windModifier;
+			model.transform.localEulerAngles = new Vector3 (15f, -90, 0f);
 		}
 		float forwardPos = transform.position.z + Time.deltaTime * pace * Mathf.Cos(playerDir * Mathf.Deg2Rad);
 		float sidePos = transform.position.x + Time.deltaTime * pace * Mathf.Sin(playerDir * Mathf.Deg2Rad);

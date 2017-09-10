@@ -25,6 +25,7 @@ public class buildMesh : MonoBehaviour {
 	public int stripInt;
 	private Vector2[] oldPointArray;
 	private Vector2[] newPointArray;
+	public Vector2 globalShorePosition;
 	public Vector2 currentShorePosition; //define the position on left shore and the right shore between 0 to 1 onf the total width
 	public Vector3 meshNumbPerSection = new Vector3();
 	public Vector3 meshSizePerSection = new Vector3();
@@ -46,14 +47,14 @@ public class buildMesh : MonoBehaviour {
 	{
 		stripInt = 0;
 		stripWaterInt = 0;
-		currentShorePosition = new Vector2 (-1 * waterwidth /2, waterwidth / 2);
+		globalShorePosition = new Vector2 (-1 * waterwidth /2, waterwidth / 2);
 		newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
-		currentShorePosition = new Vector2(0.2f,0.8f);
-		meshNumbPerSection = new Vector3 (Mathf.RoundToInt(width * (currentShorePosition[0])/meshSize), Mathf.RoundToInt(width * (currentShorePosition[1] - currentShorePosition[0])/meshSize), Mathf.RoundToInt(width * (1.0f - currentShorePosition[1])/meshSize));
+		globalShorePosition = new Vector2(0.2f,0.8f);
+		meshNumbPerSection = new Vector3 (Mathf.RoundToInt(width * (globalShorePosition[0])/meshSize), Mathf.RoundToInt(width * (globalShorePosition[1] - globalShorePosition[0])/meshSize), Mathf.RoundToInt(width * (1.0f - globalShorePosition[1])/meshSize));
 		Debug.Log ("meshNumbPerSection : " + meshNumbPerSection);
 		meshSizePerSection = new Vector3 (Mathf.RoundToInt(width * meshNumbPerSection[0]), Mathf.RoundToInt(width / meshNumbPerSection[1]) , Mathf.RoundToInt(width / meshNumbPerSection[2]));
 		meshSizePerSection = new Vector3 (meshSize, meshSize, meshSize);
-		meshSizePerSection = new Vector3 (width * currentShorePosition[0]/meshNumbPerSection[0], width * (currentShorePosition[1]-currentShorePosition[0])/meshNumbPerSection[1], width * (1.0f - currentShorePosition[1])/meshNumbPerSection[2]);
+		meshSizePerSection = new Vector3 (width * globalShorePosition[0]/meshNumbPerSection[0], width * (globalShorePosition[1]-globalShorePosition[0])/meshNumbPerSection[1], width * (1.0f - globalShorePosition[1])/meshNumbPerSection[2]);
 		Debug.Log ("meshSizePerSection : " + meshSizePerSection);
 		initWorld ();
 	}
@@ -228,11 +229,15 @@ public class buildMesh : MonoBehaviour {
 		float stripPositionZ = 0;
 
 		while (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
-			currentShorePosition = this.GetComponent<WorldManager>().GetShoreWidth(new Vector2 (0.01f, 0.01f), new Vector2 (0.1f, 0.1f));
+			//Vector2 sinusShorePosition = new Vector2 (globalShorePosition[0] + this.GetComponent<WorldManager>().shoreXOffset, globalShorePosition[1] + this.GetComponent<WorldManager>().shoreXOffset);
+			Vector2 shoreNoise = new Vector2 (this.GetComponent<WorldManager>().GetShoreNoise(0, new Vector2 (0.01f, 0.01f)), this.GetComponent<WorldManager>().GetShoreNoise(1, new Vector2 (0.01f, 0.01f)));
+
+			currentShorePosition = globalShorePosition + shoreNoise;
 			meshSizePerSection = updateMeshSizePerSection (currentShorePosition);
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
 			BuildStripe (stripInt);
+			//BuildWaterStripe (stripInt, meshSize, 30f);
 			stripInt++;
 		}
 
@@ -249,12 +254,18 @@ public class buildMesh : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		float playerposZ = player.transform.position.z;
-		currentShorePosition = this.GetComponent<WorldManager>().GetShoreWidth(new Vector2 (0.01f, 0.01f), new Vector2 (0.1f, 0.1f));
-		meshSizePerSection = updateMeshSizePerSection (currentShorePosition);
+		WaterTilePrefab.transform.position = new Vector3 (0, 0, 45f) + new Vector3 (0, 0, playerposZ);
+		Vector2 sinusShorePosition = new Vector2 (globalShorePosition[0] + this.GetComponent<WorldManager>().rightShoreXOffset, globalShorePosition[1] + this.GetComponent<WorldManager>().leftShoreXOffset);
+		//
+		Vector2 shoreNoise = new Vector2 (this.GetComponent<WorldManager>().GetShoreNoise(0, new Vector2 (0.01f, 0.01f)), this.GetComponent<WorldManager>().GetShoreNoise(1, new Vector2 (0.01f, 0.01f)));
+		currentShorePosition = sinusShorePosition + shoreNoise;
 
-		Debug.Log ("current Shore Position : " + currentShorePosition);
-		Debug.Log ("meshSize per section : " + meshSizePerSection);
-		Debug.Log ("SumCheck : " + (meshSizePerSection[0]*meshNumbPerSection[0] + meshSizePerSection[1]*meshNumbPerSection[1] + meshSizePerSection[2]*meshNumbPerSection[2]));
+		meshSizePerSection = updateMeshSizePerSection (currentShorePosition);
+		//Debug.Log ("ShoreNoise : " + shoreNoise);
+		//Debug.Log ("meshNumb per section: " + meshNumbPerSection);
+		//Debug.Log ("current Shore Position : " + currentShorePosition);
+		//Debug.Log ("meshSize per section : " + meshSizePerSection);
+		//Debug.Log ("SumCheck : " + (meshSizePerSection[0]*meshNumbPerSection[0] + meshSizePerSection[1]*meshNumbPerSection[1] + meshSizePerSection[2]*meshNumbPerSection[2]));
 		if (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
@@ -265,7 +276,5 @@ public class buildMesh : MonoBehaviour {
 		if (meshSize * PlanesList.Count > worldZBoundary [1] - worldZBoundary [0]) {
 			destroyWorldAgent ();
 		}
-
-
 	}
 }
