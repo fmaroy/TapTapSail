@@ -41,10 +41,10 @@ public class PlayerScript : MonoBehaviour {
 		}
 		if (starboard) {
 			playerDir = windDir - 180f + 45f + windModifier;
-			model.transform.localEulerAngles = new Vector3 (-15f, -90, 0f);
+			model.transform.localEulerAngles = new Vector3 (gite, 90, 0f);
 		} else {
 			playerDir = windDir - 180f - 45f + windModifier;
-			model.transform.localEulerAngles = new Vector3 (15f, -90, 0f);
+			model.transform.localEulerAngles = new Vector3 (-gite, 90, 0f);
 		}
 		float forwardPos = transform.position.z + Time.deltaTime * pace * Mathf.Cos(playerDir * Mathf.Deg2Rad);
 		float sidePos = transform.position.x + Time.deltaTime * pace * Mathf.Sin(playerDir * Mathf.Deg2Rad);

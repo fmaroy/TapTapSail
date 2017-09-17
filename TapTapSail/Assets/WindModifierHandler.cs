@@ -36,7 +36,7 @@ public class WindModifierHandler : MonoBehaviour {
 		if (currentTimer > releasePace) {
 			currentTimer = 0f;
 			float positionInX = Random.Range(WindArrowPosDelta[0] - (environement.waterwidth / 2), -1 * WindArrowPosDelta[0] + (environement.waterwidth / 2));
-			releaseWind (WindArrowBasicPrefab, Random.Range(-10f, 10f), positionInX);
+			releaseWind (WindArrowBasicPrefab, Random.Range(-25f, 25f), positionInX);
 		}
 	}
 }
