@@ -254,7 +254,7 @@ public class buildMesh : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		float playerposZ = player.transform.position.z;
-		WaterTilePrefab.transform.position = new Vector3 (0, 0, 45f) + new Vector3 (0, 0, playerposZ);
+		WaterTilePrefab.transform.position = new Vector3 (0, 0, 37f) + new Vector3 (0, 0, playerposZ);
 		Vector2 sinusShorePosition = new Vector2 (globalShorePosition[0] + this.GetComponent<WorldManager>().rightShoreXOffset, globalShorePosition[1] + this.GetComponent<WorldManager>().leftShoreXOffset);
 		//
 		Vector2 shoreNoise = new Vector2 (this.GetComponent<WorldManager>().GetShoreNoise(0, new Vector2 (0.01f, 0.01f)), this.GetComponent<WorldManager>().GetShoreNoise(1, new Vector2 (0.01f, 0.01f)));
