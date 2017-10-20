@@ -6,6 +6,7 @@ TagManager:
   tags:
   - WindCollectable
   - Fire
+  - Monster
   layers:
   - Default
   - TransparentFX

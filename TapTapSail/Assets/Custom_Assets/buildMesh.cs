@@ -178,7 +178,14 @@ public class buildMesh : MonoBehaviour {
 			StartCoroutine(AnimWaterTile (i, WaterContainerPrefab,WaterTilePrefab, new Vector3 (leftWaterPos + i * tileWidth, -0.5f, zPos), fallTime,startheight, RandomizeHeightFactor));
 		}
 	}
-
+	/// <summary>
+	/// build a plan and handles the falling animation
+	/// </summary>
+	/// <returns>The plane.</returns>
+	/// <param name="obj">Object.</param>
+	/// <param name="time">Time.</param>
+	/// <param name="initialHeight">Initial height.</param>
+	/// <param name="randomHeight">Random height.</param>
 	IEnumerator AnimPlane (GameObject obj, float time, float initialHeight, float randomHeight)
 	{
 		float startHeight = initialHeight + Random.Range((-1*randomHeight/2),(1*randomHeight/2));
@@ -195,7 +202,8 @@ public class buildMesh : MonoBehaviour {
 		obj.transform.localPosition = new Vector3 (0f, 0, 0);
 	}
 
-	public void BuildStripe (int stripeID)
+
+	public void BuildStripe (int stripeID, bool isAnimated)
 	{
 		//Debug.Log ("Array length : " + oldPointArray.Length);
 
@@ -215,8 +223,11 @@ public class buildMesh : MonoBehaviour {
 			currentPlane.transform.SetParent (this.transform);
 			float startHeight = startheight + Random.Range((-1*RandomizeHeightFactor/2),(1*RandomizeHeightFactor/2));
 
-
-			StartCoroutine(AnimPlane(currentPlane, fallTime,startheight, RandomizeHeightFactor));
+			if (isAnimated) {
+				StartCoroutine (AnimPlane (currentPlane, fallTime, startheight, RandomizeHeightFactor));
+			} else {
+				currentPlane.transform.localPosition = new Vector3 (0f, 0, 0);
+			}
 			//Debug.Log (currentPlane.name);
 			objInStripe.Add (currentPlane);
 		}
@@ -236,7 +247,7 @@ public class buildMesh : MonoBehaviour {
 			meshSizePerSection = updateMeshSizePerSection (currentShorePosition);
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
-			BuildStripe (stripInt);
+			BuildStripe (stripInt, false);
 			//BuildWaterStripe (stripInt, meshSize, 30f);
 			stripInt++;
 		}
@@ -269,7 +280,7 @@ public class buildMesh : MonoBehaviour {
 		if (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
 			oldPointArray = newPointArray;
 			newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
-			BuildStripe (stripInt);
+			BuildStripe (stripInt, true);
 			stripInt++;
 		}
 		//Debug.Log("current Size : " + meshSize * PlanesList.Count);

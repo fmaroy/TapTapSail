@@ -15,13 +15,15 @@ public class GameController : MonoBehaviour {
 	public float currentEnnemyPaceExponential = 1f;
 	public float ennemyPaceLinearModifier = 0.01f;
 	//public float ennemyPaceExponenetialModifier = 0.01f;
-
+	public float ennemyLateralSpeed = 1.0f;
 
 	public Vector2 shoreAmplitudeRange = new Vector2 (0.02f, 0.1f);
 	public float shoreVariabilityAmplitudeTarget;
 	public float shoreVaraibilityPace = 5.0f;
 	public Vector2 shoreFrequencyRange = new Vector2 (5f, 0.5f);
 	public float shoreVaraibilityFrequencyTarget;
+
+	public float windPace = 2.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -43,8 +45,10 @@ public class GameController : MonoBehaviour {
 		currentEnnemyPaceLinear = currentEnnemyPaceLinear + Time.deltaTime * currentEnnemyPaceExponential;
 		currentEnnemyPace = currentEnnemyPace + currentEnnemyPaceLinear * Time.deltaTime ;
 		currentEnnemyPosZ = currentEnnemyPosition.z + Time.deltaTime * currentEnnemyPace ;
-
-		ennemy.transform.position = new Vector3 (0f, 0f, currentEnnemyPosZ);
+		float ennemyPosXDelta = player.transform.position.x - ennemy.transform.position.x;
+		float currentEnnemyPosX = ennemy.transform.position.x;
+		currentEnnemyPosX = currentEnnemyPosX + ennemyPosXDelta * ennemyLateralSpeed * Time.deltaTime;
+		ennemy.transform.position = new Vector3 (currentEnnemyPosX, 0f, currentEnnemyPosZ);
 
 	}
 }

@@ -28,6 +28,11 @@ public class PlayerScript : MonoBehaviour {
 			windModifier = other.GetComponent<WindCollectableScript> ().WindDirAngle;
 			Destroy(other.gameObject);
 		}
+		if (other.tag == "Monster") 
+		{
+			Debug.Log ("Finished");
+			FindObjectOfType<SceneManagerScript> ().reloadScene ();
+		}
 	}
 		
 	// Update is called once per frame
