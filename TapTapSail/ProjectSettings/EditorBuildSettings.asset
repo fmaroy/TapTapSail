@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Custom_Assets/MeshBuiding.unity
-    guid: caa76c96f66a343e7ab2221f4f7825d1
+    path: Assets/PlayScene.unity
+    guid: 7a76a559161af4fe99af8b4b612e4d49

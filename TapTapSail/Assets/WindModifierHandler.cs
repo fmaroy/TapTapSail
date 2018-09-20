@@ -14,6 +14,8 @@ public class WindModifierHandler : MonoBehaviour {
 	public float currentPlayerPosZ;
 	public Vector2 WindArrowPosDelta = new Vector2 (5f, 10f);
 
+	public List<Sprite> ArrowSpriteList = new List<Sprite>();
+
 	// Use this for initialization
 	void Start () {
 		currentReleasePace = releasePace;
@@ -26,6 +28,11 @@ public class WindModifierHandler : MonoBehaviour {
 		temp.transform.SetParent (this.transform);
 		temp.transform.eulerAngles = new Vector3 (90f, angle, 0);
 		temp.GetComponent<WindCollectableScript> ().WindDirAngle = angle;
+		if (((angle >= 0) && (xPos >= 0)) || ((angle < 0) && (xPos < 0))) {
+			obj.GetComponent<SpriteRenderer> ().sprite = ArrowSpriteList [0];
+		} else {
+			obj.GetComponent<SpriteRenderer> ().sprite = ArrowSpriteList [1];
+		}
 		WindArrowsList.Add (temp);
 	}
 

@@ -50,5 +50,9 @@ public class GameController : MonoBehaviour {
 		currentEnnemyPosX = currentEnnemyPosX + ennemyPosXDelta * ennemyLateralSpeed * Time.deltaTime;
 		ennemy.transform.position = new Vector3 (currentEnnemyPosX, 0f, currentEnnemyPosZ);
 
+		ennemy.transform.LookAt (player.transform.position,ennemy.transform.position);
+		ennemy.transform.localEulerAngles = ennemy.transform.localEulerAngles + new Vector3(0f, 0f, 90f) ;
+
+
 	}
 }

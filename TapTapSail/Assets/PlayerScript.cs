@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour {
 
+    public GameObject GamePlayObject;
 	public float pace = 1.0f;
 	public float windDir = 180f;
 	public float windModifier = 0f;
@@ -28,11 +29,12 @@ public class PlayerScript : MonoBehaviour {
 			windModifier = other.GetComponent<WindCollectableScript> ().WindDirAngle;
 			Destroy(other.gameObject);
 		}
-		if (other.tag == "Monster") 
+		if (other.tag == "Monster")
 		{
 			Debug.Log ("Finished");
-			FindObjectOfType<SceneManagerScript> ().reloadScene ();
-		}
+            GameObject.Find("StartManager").GetComponent<StartManager>().displayFinishScreen();
+
+        }
 	}
 		
 	// Update is called once per frame

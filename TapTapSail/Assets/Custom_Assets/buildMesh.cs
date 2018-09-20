@@ -49,7 +49,7 @@ public class buildMesh : MonoBehaviour {
 		stripWaterInt = 0;
 		globalShorePosition = new Vector2 (-1 * waterwidth /2, waterwidth / 2);
 		newPointArray = CreatePointArray (width, meshSize, RandomizeFloorFactor);
-		globalShorePosition = new Vector2(0.2f,0.8f);
+		//globalShorePosition = new Vector2(0.2f,0.8f);
 		meshNumbPerSection = new Vector3 (Mathf.RoundToInt(width * (globalShorePosition[0])/meshSize), Mathf.RoundToInt(width * (globalShorePosition[1] - globalShorePosition[0])/meshSize), Mathf.RoundToInt(width * (1.0f - globalShorePosition[1])/meshSize));
 		Debug.Log ("meshNumbPerSection : " + meshNumbPerSection);
 		meshSizePerSection = new Vector3 (Mathf.RoundToInt(width * meshNumbPerSection[0]), Mathf.RoundToInt(width / meshNumbPerSection[1]) , Mathf.RoundToInt(width / meshNumbPerSection[2]));
@@ -66,7 +66,9 @@ public class buildMesh : MonoBehaviour {
 
 		//currentShorePosition = this.GetComponent<WorldManager>().GetShoreWidth(new Vector2 (0.01f, 0.01f), new Vector2 (0.1f, 0.1f));
 
-		if ((currentShorePosition [0] < dimlessXPos) && (dimlessXPos < currentShorePosition [1])) {
+	    //if ((currentShorePosition [0] < dimlessXPos) && (dimlessXPos < currentShorePosition [1])) {
+        if ((currentShorePosition[0] < xPos) && (xPos < currentShorePosition[1]))
+        {
 			depth = seaDepth;
 		} else {
 			depth = 0f;
@@ -237,7 +239,6 @@ public class buildMesh : MonoBehaviour {
 	public void initWorld ()
 	{
 		float playerposZ = player.transform.position.z;
-		float stripPositionZ = 0;
 
 		while (stripInt * meshSize < playerposZ + worldZBoundary[1]) {
 			//Vector2 sinusShorePosition = new Vector2 (globalShorePosition[0] + this.GetComponent<WorldManager>().shoreXOffset, globalShorePosition[1] + this.GetComponent<WorldManager>().shoreXOffset);
